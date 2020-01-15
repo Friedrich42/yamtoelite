@@ -18,11 +18,11 @@ main_channel_id = conf.CHANNEL_ID_FOR_BOT
 
 def get_songs_from_yamusic(yandex_music_client):
     try:
-        return list([Track(id_of_song=song.track.id,
-                           song_name=song.track.title,
-                           artists=" ft. ".join([artist.name for artist in song.track.artists]),
-                           album_id=song.album_id,
-                           local_path="", ) for song in yandex_music_client.users_likes_tracks().tracks])
+        return list([Track(id_of_song=track.track.id,
+                           song_name=track.track.title,
+                           artists=" ft. ".join([artist.name for artist in track.track.artists]),
+                           album_id=track.album_id,
+                           local_path="", ) for track in yandex_music_client.users_likes_tracks().tracks])
     except Exception as e:
         log_error(e)
 
