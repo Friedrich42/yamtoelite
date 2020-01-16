@@ -23,7 +23,19 @@ def log_error(error):
 
 
 @contextmanager
-def in_dir(path):
+def in_dir(path: str):
+    """
+        function to do something in any directory
+
+        example:
+        with in_dir("foo/bar"):
+            do_smth()
+
+        is equivalent to
+        os.chdir("foo/bar")
+        do_smth()
+        os.chdir(".."*2)
+    """
     if path[-1] == "/":
         path = path[:-1]
     if path[0:2] == "./":
