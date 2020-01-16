@@ -9,7 +9,7 @@ from TrackDB import Track, TrackDB
 
 from functions import *
 
-bot = telebot.TeleBot(conf.API_TOKEN_TELEGRAM)
+bot = telebot.TeleBot(conf.API_TOKEN_TELEGRAM, threaded=False)
 yam_client = Client(conf.API_TOKEN_YANDEX_MUSIC_CLIENT)
 track_db = TrackDB()
 

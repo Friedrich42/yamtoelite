@@ -3,7 +3,10 @@ venv/
 __pycache__/
 
 db/
+logs/
 tracks/
 
 dev.py
 conf.py
+
+start.sh
