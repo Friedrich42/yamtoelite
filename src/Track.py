@@ -10,7 +10,7 @@ class Track(Base):
     id_of_song = sqla.Column(sqla.Integer, unique=True, nullable=False)
     song_name = sqla.Column(sqla.String, nullable=False)
     artists = sqla.Column(sqla.String, nullable=False)
-    album_id = sqla.Column(sqla.Integer, unique=True, nullable=False)
+    album_id = sqla.Column(sqla.Integer, nullable=False)
     local_path = sqla.Column(sqla.String, unique=True)
 
     def __repr__(self):
