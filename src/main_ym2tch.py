@@ -1,21 +1,19 @@
 import threading
 from time import sleep
 
-import telebot
 from yandex_music.client import Client
 
-import conf
-from TrackDB import Track, TrackDB
-from functions import *
+from src import conf
+from src.Track import Track
+from src.functions import *
 
 bot = telebot.TeleBot(conf.API_TOKEN_TELEGRAM, threaded=False)
 yam_client = Client(conf.API_TOKEN_YANDEX_MUSIC_CLIENT)
-track_db = TrackDB()
 
 main_channel_id = conf.CHANNEL_ID_FOR_BOT
 
 
-def get_songs_from_yamusic(yandex_music_client):
+def get_all_tracks_from_yamusic(yandex_music_client):
     """
     get all liked songs from yandex music
 
@@ -45,22 +43,23 @@ def on_new_song_detected(song):
         return log_error(e)
 
 
-def worker():
+def worker(track_db_session):
     try:
         while True:
-            for song in get_songs_from_yamusic(yam_client):
-                db_song = track_db.get_song(song.id_of_song)
+            for track in get_all_tracks_from_yamusic(yam_client):
+                db_song = track_db_session.query(Track).filter_by(id_of_song=track.id_of_song).first()
 
                 if db_song is None:
-                    track_name = f"{song.artists} - {song.song_name}.mp3"
-                    with in_dir(f"tracks/{song.artists}"):
-                        sleep(5)
-                        yam_client.tracks([f'{song.id_of_song}:{song.album_id}'])[0].download(track_name)
+                    track_name = f"{track.artists} - {track.song_name}.mp3"
+                    with in_dir(f"tracks/{track.artists}"):
+                        sleep(3)
+                        yam_client.tracks([f'{track.id_of_song}:{track.album_id}'])[0].download(track_name)
 
-                    song.local_path = f"tracks/{song.artists}/{track_name}"
-                    track_db.add_song(song)
+                    track.local_path = f"tracks/{track.artists}/{track_name}"
+                    track_db_session.add(track)
+                    track_db_session.commit()
 
-                    r = on_new_song_detected(song)  # just actions done on new song detected
+                    r = on_new_song_detected(track)  # just actions done on new song detected
                     if not r == "ok":
                         break
             sleep(20)
@@ -68,15 +67,11 @@ def worker():
         log_error(e)
 
 
-def main():
-    worker_thread = threading.Thread(target=worker, daemon=True)
+def main(track_db_session):
+    worker_thread = threading.Thread(target=worker, args=(track_db_session,), daemon=True)
     worker_thread.start()
 
     try:
         bot.polling(none_stop=True)
     except Exception as e:
         return log_error(e)
-
-
-if __name__ == '__main__':
-    main()

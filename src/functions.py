@@ -11,7 +11,7 @@ def get_time():
 
 def log_error(error):
     """ creates logs folder and logs all the errors """
-    with in_dir("logs"): 
+    with in_dir("logs"):
         time = get_time()  # get current time
         with open(f'error-{time}.log', 'w') as log:
             log.write(str(error))  # write log to the .log file
@@ -46,4 +46,4 @@ def in_dir(path: str):
         os.makedirs(path)  # if path not exists, creates the folder
     os.chdir(path)
     yield
-    os.chdir("../"*(deepness+1))
+    os.chdir("../" * (deepness + 1))
