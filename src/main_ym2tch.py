@@ -1,6 +1,7 @@
 import threading
 from time import sleep
 
+import telebot
 from yandex_music.client import Client
 
 from src import conf
