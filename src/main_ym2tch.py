@@ -22,8 +22,8 @@ def get_all_tracks_from_yamusic(yandex_music_client):
     @return: list of Track objects
     """
     try:
-        return list([Track(id_of_song=track.id, song_name=track.title,
-                           artists=" ft. ".join([artist.name for artist in track.artists]),
+        return list([Track(id_of_song=track.id, song_name=track.title.replace("/", " "),
+                           artists=" ft. ".join([artist.name for artist in track.artists]).replace("/", " "),
                            album_id=track.albums[0].id,
                            local_path="", ) for track in yandex_music_client.tracks(
             [i.track_id for i in yandex_music_client.users_playlists(3)[0].tracks])])
