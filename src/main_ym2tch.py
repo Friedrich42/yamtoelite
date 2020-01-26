@@ -2,6 +2,7 @@ import threading
 from time import sleep
 
 import telebot
+from sqlalchemy.exc import IntegrityError
 from yandex_music.client import Client
 
 from src import conf
@@ -22,8 +23,8 @@ def get_all_tracks_from_yamusic(yandex_music_client):
     @return: list of Track objects
     """
     try:
-        return list([Track(id_of_song=track.id, song_name=track.title.replace("/", " "),
-                           artists=" ft. ".join([artist.name for artist in track.artists]).replace("/", " "),
+        return list([Track(id_of_song=track.id, song_name=track.title,
+                           artists=" ft. ".join([artist.name for artist in track.artists]),
                            album_id=track.albums[0].id,
                            local_path="", ) for track in yandex_music_client.tracks(
             [i.track_id for i in yandex_music_client.users_playlists(3)[0].tracks])])
@@ -51,14 +52,18 @@ def worker(track_db_session):
                 db_song = track_db_session.query(Track).filter_by(id_of_song=track.id_of_song).first()
 
                 if db_song is None:
-                    track_name = f"{track.artists} - {track.song_name}.mp3"
-                    with in_dir(f"tracks/{track.artists}"):
+                    track_name = filter_filename(f"{track.artists} - {track.song_name}.mp3")
+                    with in_dir(filter_filepath(f"tracks/{track.artists}")):
                         sleep(3)
                         yam_client.tracks([f'{track.id_of_song}:{track.album_id}'])[0].download(track_name)
 
-                    track.local_path = f"tracks/{track.artists}/{track_name}"
-                    track_db_session.add(track)
-                    track_db_session.commit()
+                    track.local_path = filter_filepath("tracks/{track.artists}/{track_name}")
+                    try:
+                        track_db_session.add(track)
+                        track_db_session.commit()
+                    except IntegrityError as e:
+                        log_error(e)
+                        break
 
                     r = on_new_song_detected(track)  # just actions done on new song detected
                     if not r == "ok":

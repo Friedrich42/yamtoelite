@@ -1,6 +1,7 @@
 import datetime
 import os
 
+from pathvalidate import sanitize_filename, sanitize_filepath
 from contextlib import contextmanager
 
 
@@ -47,3 +48,11 @@ def in_dir(path: str):
     os.chdir(path)
     yield
     os.chdir("../" * (deepness + 1))
+
+
+def filter_filename(path: str):
+    return sanitize_filename(path)[:255]
+
+
+def filter_filepath(path: str):
+    return sanitize_filepath(path)
