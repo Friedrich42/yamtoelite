@@ -57,7 +57,7 @@ def worker(track_db_session):
                         sleep(3)
                         yam_client.tracks([f'{track.id_of_song}:{track.album_id}'])[0].download(track_name)
 
-                    track.local_path = filter_filepath("tracks/{track.artists}/{track_name}")
+                    track.local_path = filter_filepath(f"tracks/{track.artists}/{track_name}")
                     try:
                         track_db_session.add(track)
                         track_db_session.commit()
