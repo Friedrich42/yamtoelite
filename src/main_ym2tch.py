@@ -38,7 +38,7 @@ def on_new_song_detected(song):
     @return: 'ok' if all is ok, error otherwise
     """
     try:
-#        bot.send_audio(chat_id=main_channel_id, audio=open(song.local_path, "rb"))
+        bot.send_audio(chat_id=main_channel_id, audio=open(song.local_path, "rb"))
         return "ok"
     except Exception as e:
         return log_error(e)
