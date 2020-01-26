@@ -38,8 +38,7 @@ def on_new_song_detected(song):
     @return: 'ok' if all is ok, error otherwise
     """
     try:
-        bot.send_audio(chat_id=main_channel_id, audio=open(song.local_path, "rb"),
-                       caption=f"{song.artists} - {song.song_name}")
+#        bot.send_audio(chat_id=main_channel_id, audio=open(song.local_path, "rb"))
         return "ok"
     except Exception as e:
         return log_error(e)
@@ -62,8 +61,9 @@ def worker(track_db_session):
                         track_db_session.add(track)
                         track_db_session.commit()
                     except IntegrityError as e:
-                        log_error(e)
-                        break
+                        #log_error(e)
+                        track_db_session.rollback()
+                        continue
 
                     r = on_new_song_detected(track)  # just actions done on new song detected
                     if not r == "ok":
