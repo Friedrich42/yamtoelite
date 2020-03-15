@@ -78,10 +78,12 @@ def worker(track_db_session, logger):
 
 def main(track_db_session, logger):
     worker_thread = threading.Thread(target=worker, args=(track_db_session, logger), daemon=True)
+    logger.info("Starting worker thread...")
     worker_thread.start()
     logger.info("Worker thread started")
 
     try:
+        logger.info("Starting telegram bot...")
         bot.polling(none_stop=True)
         logger.info("Bot started")
     except Exception as e:
