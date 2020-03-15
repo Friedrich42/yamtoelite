@@ -10,19 +10,6 @@ def get_time():
     return datetime.datetime.now().replace(microsecond=0).isoformat().replace(':', '-')  # return time in right format
 
 
-def log_error(error):
-    """ creates logs folder and logs all the errors """
-    with in_dir("logs"):
-        time = get_time()  # get current time
-        with open(f'error-{time}.log', 'w') as log:
-            log.write(str(error))  # write log to the .log file
-
-    print(error)
-    return error
-
-    # exit(1)  # exit
-
-
 @contextmanager
 def in_dir(path: str):
     """
